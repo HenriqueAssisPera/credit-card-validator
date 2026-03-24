@@ -1,0 +1,46 @@
+## Build results
+bin/
+obj/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+	
+## Rider / VS Code (opcional)
+.idea/
+.vscode/
+
+## ASP.NET / local settings
+appsettings.Development.json
+
+## Logs
+*.log
+
+## Windows
+Thumbs.db
+Desktop.ini
+
+## NuGet
+*.nupkg
+packages/
+
+## Test results
+TestResults/
+
+## Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+## JetBrains / ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+## Misc
+*.tmp
+*.cache
+*.db-shm
+*.db-wal
