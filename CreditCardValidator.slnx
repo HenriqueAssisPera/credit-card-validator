@@ -1,3 +1,8 @@
 <Solution>
-  <Project Path="CreditCardValidator/CreditCardValidator.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/CreditCardValidator/CreditCardValidator.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CreditCardValidator/CreditCardValidator.UnitTests.csproj" Id="4ea410f7-9158-4464-8a95-00c98bcef2f5" />
+  </Folder>
 </Solution>
