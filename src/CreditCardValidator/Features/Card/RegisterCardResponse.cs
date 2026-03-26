@@ -1,7 +1,4 @@
-﻿using CreditCardValidator.Validators;
-using MediatR;
-
-namespace CreditCardValidator.Features.RegisterCard
+﻿namespace CreditCardValidator.Features.RegisterCard
 {
     public class RegisterCardResponse
     {
