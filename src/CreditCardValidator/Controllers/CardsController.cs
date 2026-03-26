@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CreditCardValidator.Controllers;
 
 [ApiController]
-[Route("api/cards")]
+[Route("api/[controller]")]
 public class CardsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -19,6 +19,10 @@ public class CardsController : ControllerBase
     public async Task<IActionResult> Register(RegisterCardCommand command)
     {
         var result = await _mediator.Send(command);
-        return Ok(result);
+
+        if (!result.IsValid)
+            return UnprocessableEntity(result);
+
+        return Created(string.Empty, result);
     }
 }
