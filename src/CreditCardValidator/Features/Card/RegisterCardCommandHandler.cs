@@ -1,5 +1,6 @@
 ﻿using CreditCardValidator.Data;
 using CreditCardValidator.Entities;
+using CreditCardValidator.Enums;
 using CreditCardValidator.Exceptions;
 using CreditCardValidator.Validators;
 using MediatR;
@@ -26,15 +27,16 @@ public class RegisterCardCommandHandler : IRequestHandler<RegisterCardCommand, R
     public async Task<RegisterCardResponse> Handle(RegisterCardCommand request, CancellationToken cancellationToken)
     {
         var validationResult = _cardValidator.Validate(request.CardNumber);
+        var brandName = validationResult.Brand.ToString().ToUpperInvariant();
 
         if (!validationResult.IsValid)
         {
-            _logger.LogInformation("Card validation failed for brand {Brand}.", validationResult.Brand);
+            _logger.LogInformation("Card validation failed for brand {Brand}.", brandName);
 
             return new RegisterCardResponse
             {
                 IsValid = false,
-                Brand = validationResult.Brand,
+                Brand = brandName,
                 Message = "Invalid card."
             };
         }
@@ -70,12 +72,12 @@ public class RegisterCardCommandHandler : IRequestHandler<RegisterCardCommand, R
             throw new DatabaseUnavailableException("The database is currently unavailable. Please try again later.", ex);
         }
 
-        _logger.LogInformation("Card registered successfully for cardholder {Cardholder} with brand {Brand}.", request.FullName, validationResult.Brand);
+        _logger.LogInformation("Card registered successfully for cardholder {Cardholder} with brand {Brand}.", request.FullName, brandName);
 
         return new RegisterCardResponse
         {
             IsValid = true,
-            Brand = validationResult.Brand,
+            Brand = brandName,
             Message = "Card validated and registered successfully."
         };
     }
