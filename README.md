@@ -29,13 +29,10 @@ API REST para validação e cadastro de cartões de crédito, com identificaçã
 # 4. Suba os containers
 - docker-compose up -d --build
 
-# 5. Acompanhe os logs (opcional, para ver se tudo subiu)
-- docker-compose logs -f
-
-# 6. Quando aparecer "Now listening on: http://[::]:8080", abra no navegador:
+# 5. Acessar API
 - http://localhost:5000/swagger
 
-# 7. Para parar tudo:
+# 6. Para parar tudo:
 - docker-compose down
 
 
@@ -45,6 +42,7 @@ API REST para validação e cadastro de cartões de crédito, com identificaçã
 
 ## 🧪 Executar Testes
 - Os testes rodam fora do Docker, com o .NET SDK instalado:
+- Rodar na raiz do projeto de tests:
 - dotnet test
 
 
