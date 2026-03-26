@@ -1,4 +1,5 @@
 ﻿using CreditCardValidator.Entities;
+using CreditCardValidator.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace CreditCardValidator.Data;
@@ -28,7 +29,10 @@ public class AppDbContext : DbContext
 
             entity.Property(x => x.Brand)
                 .IsRequired()
-                .HasMaxLength(20);
+                .HasMaxLength(20)
+                .HasConversion(
+                    v => v.ToString(),
+                    v => Enum.Parse<CardBrand>(v));
 
             entity.Property(x => x.CardNumber)
                 .IsRequired()
