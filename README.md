@@ -18,18 +18,34 @@ API REST para validação e cadastro de cartões de crédito, com identificaçã
 - [Docker](https://www.docker.com/) instalado e em execução
 
 ### Subir a aplicação
-- docker-compose up -d --build
-- A API estará disponível em: `http://localhost:5000/swagger`
 
-### Parar os containers
+# 1. Abra o Docker Desktop e aguarde ele iniciar (ícone fica verde)
+
+# 2. Abra qualquer terminal (PowerShell, CMD, Terminal do Windows)
+
+# 3. Navegue até a raiz do projeto
+ - cd C:\...[caminho de pastas até a raiz do projeto]
+
+# 4. Suba os containers
+- docker-compose up -d --build
+
+# 5. Acompanhe os logs (opcional, para ver se tudo subiu)
+- docker-compose logs -f
+
+# 6. Quando aparecer "Now listening on: http://[::]:8080", abra no navegador:
+- http://localhost:5000/swagger
+
+# 7. Para parar tudo:
 - docker-compose down
+
 
 ## 📡 Endpoints
 - POST /api/cards
 - GET /api/health
 
 ## 🧪 Executar Testes
-- docker-compose exec api dotnet test
+- Os testes rodam fora do Docker, com o .NET SDK instalado:
+- dotnet test
 
 
 
