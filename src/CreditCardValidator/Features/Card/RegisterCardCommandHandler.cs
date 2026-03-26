@@ -1,7 +1,9 @@
 ﻿using CreditCardValidator.Data;
 using CreditCardValidator.Entities;
+using CreditCardValidator.Exceptions;
 using CreditCardValidator.Validators;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CreditCardValidator.Features.RegisterCard;
 
@@ -9,11 +11,16 @@ public class RegisterCardCommandHandler : IRequestHandler<RegisterCardCommand, R
 {
     private readonly CardValidator _cardValidator;
     private readonly AppDbContext _dbContext;
+    private readonly ILogger<RegisterCardCommandHandler> _logger;
 
-    public RegisterCardCommandHandler(CardValidator cardValidator, AppDbContext dbContext)
+    public RegisterCardCommandHandler(
+        CardValidator cardValidator,
+        AppDbContext dbContext,
+        ILogger<RegisterCardCommandHandler> logger)
     {
         _cardValidator = cardValidator;
         _dbContext = dbContext;
+        _logger = logger;
     }
 
     public async Task<RegisterCardResponse> Handle(RegisterCardCommand request, CancellationToken cancellationToken)
@@ -22,6 +29,8 @@ public class RegisterCardCommandHandler : IRequestHandler<RegisterCardCommand, R
 
         if (!validationResult.IsValid)
         {
+            _logger.LogInformation("Card validation failed for brand {Brand}.", validationResult.Brand);
+
             return new RegisterCardResponse
             {
                 IsValid = false,
@@ -40,8 +49,28 @@ public class RegisterCardCommandHandler : IRequestHandler<RegisterCardCommand, R
             CreatedAt = DateTime.UtcNow
         };
 
-        _dbContext.Cards.Add(card);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        try
+        {
+            _dbContext.Cards.Add(card);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(ex, "Database error while registering card for cardholder {Cardholder}.", request.FullName);
+            throw new CardRegistrationException("Failed to register the card due to a database error.", ex);
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogWarning("Card registration was cancelled for cardholder {Cardholder}.", request.FullName);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while persisting card for cardholder {Cardholder}.", request.FullName);
+            throw new DatabaseUnavailableException("The database is currently unavailable. Please try again later.", ex);
+        }
+
+        _logger.LogInformation("Card registered successfully for cardholder {Cardholder} with brand {Brand}.", request.FullName, validationResult.Brand);
 
         return new RegisterCardResponse
         {
