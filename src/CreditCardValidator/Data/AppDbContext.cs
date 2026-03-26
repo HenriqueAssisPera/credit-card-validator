@@ -30,9 +30,9 @@ public class AppDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(20);
 
-            entity.Property(x => x.LastFourDigits)
+            entity.Property(x => x.CardNumber)
                 .IsRequired()
-                .HasMaxLength(4);
+                .HasMaxLength(16);
 
             entity.Property(x => x.CreatedAt)
                 .IsRequired();
