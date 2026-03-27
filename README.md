@@ -17,22 +17,22 @@ API REST para validação e cadastro de cartões de crédito, com identificaçã
 ### Pré-requisitos
 - [Docker](https://www.docker.com/) instalado e em execução
 
-### Subir a aplicação
+## Subir a aplicação
 
-# 1. Abra o Docker Desktop e aguarde ele iniciar (ícone fica verde)
+### 1. Abra o Docker Desktop e aguarde ele iniciar (ícone fica verde)
 
-# 2. Abra qualquer terminal (PowerShell, CMD, Terminal do Windows)
+### 2. Abra qualquer terminal (PowerShell, CMD, Terminal do Windows)
 
-# 3. Navegue até a raiz do projeto
+### 3. Navegue até a raiz do projeto
  - cd C:\...[caminho de pastas até a raiz do projeto]
 
-# 4. Suba os containers
+### 4. Suba os containers
 - docker-compose up -d --build
 
-# 5. Acessar API
+### 5. Acessar API
 - http://localhost:5000/swagger
 
-# 6. Para parar tudo:
+### 6. Para parar tudo:
 - docker-compose down
 
 
