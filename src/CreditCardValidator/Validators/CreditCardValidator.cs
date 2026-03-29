@@ -11,6 +11,9 @@ public class CardValidator
 
         cardNumber = cardNumber.Trim();
 
+        if (!IsNumeric(cardNumber))
+            return new CreditCardValidationResult { IsValid = false, Brand = CardBrand.Unknown };
+
         var brand = IdentifyBrand(cardNumber);
         var isValid = brand != CardBrand.Unknown && IsValidLuhn(cardNumber);
 
@@ -18,6 +21,17 @@ public class CardValidator
     }
 
     #region Single Responsibility Principle
+    private static bool IsNumeric(string value)
+    {
+        foreach (var c in value)
+        {
+            if (!char.IsDigit(c))
+                return false;
+        }
+
+        return true;
+    }
+
     private static CardBrand IdentifyBrand(string cardNumber)
     {
         var length = cardNumber.Length;
