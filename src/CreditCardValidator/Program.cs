@@ -1,8 +1,10 @@
+using CreditCardValidator.Consumers;
 using CreditCardValidator.Data;
 using CreditCardValidator.Exceptions;
 using CreditCardValidator.Features.RegisterCard;
 using CreditCardValidator.Validators;
 using FluentValidation;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +27,26 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 builder.Services.AddScoped<CardValidator>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddMassTransit(bus =>
+{
+    bus.AddConsumer<CardRegisteredConsumer>();
+
+    bus.UsingRabbitMq((context, cfg) =>
+    {
+        var host = builder.Configuration["RabbitMQ:Host"] ?? "localhost";
+        var username = builder.Configuration["RabbitMQ:Username"] ?? "guest";
+        var password = builder.Configuration["RabbitMQ:Password"] ?? "guest";
+
+        cfg.Host(host, "/", h =>
+        {
+            h.Username(username);
+            h.Password(password);
+        });
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<AppDbContext>("sqlserver");

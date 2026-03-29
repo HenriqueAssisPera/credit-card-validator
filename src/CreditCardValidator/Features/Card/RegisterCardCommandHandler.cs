@@ -1,8 +1,9 @@
 ﻿using CreditCardValidator.Data;
 using CreditCardValidator.Entities;
-using CreditCardValidator.Enums;
+using CreditCardValidator.Events;
 using CreditCardValidator.Exceptions;
 using CreditCardValidator.Validators;
+using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,15 +13,18 @@ public class RegisterCardCommandHandler : IRequestHandler<RegisterCardCommand, R
 {
     private readonly CardValidator _cardValidator;
     private readonly AppDbContext _dbContext;
+    private readonly IPublishEndpoint _publishEndpoint;
     private readonly ILogger<RegisterCardCommandHandler> _logger;
 
     public RegisterCardCommandHandler(
         CardValidator cardValidator,
         AppDbContext dbContext,
+        IPublishEndpoint publishEndpoint,
         ILogger<RegisterCardCommandHandler> logger)
     {
         _cardValidator = cardValidator;
         _dbContext = dbContext;
+        _publishEndpoint = publishEndpoint;
         _logger = logger;
     }
 
@@ -72,7 +76,15 @@ public class RegisterCardCommandHandler : IRequestHandler<RegisterCardCommand, R
             throw new DatabaseUnavailableException("The database is currently unavailable. Please try again later.", ex);
         }
 
-        _logger.LogInformation("Card registered successfully for cardholder {Cardholder} with brand {Brand}.", request.FullName, brandName);
+        await _publishEndpoint.Publish(new CardRegisteredEvent
+        {
+            CardId = card.Id,
+            Brand = brandName,
+            CardholderName = card.CardholderName,
+            RegisteredAt = card.CreatedAt
+        }, cancellationToken);
+
+        _logger.LogInformation("Card registered and event published for cardholder {Cardholder} with brand {Brand}.", request.FullName, brandName);
 
         return new RegisterCardResponse
         {
